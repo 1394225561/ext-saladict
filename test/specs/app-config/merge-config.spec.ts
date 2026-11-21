@@ -35,6 +35,10 @@ describe('mergeConfig', () => {
     oldConfig.dictAuth.deepl.authKey = 'deepl-key'
     oldConfig.dictAuth.deeplx.apiUrl = 'https://deeplx.example.com'
     oldConfig.dictAuth.deeplx.token = 'deeplx-token'
+    ;(oldConfig.dictAuth as any).openai.apiKey = 'sk-test'
+    ;(oldConfig.dictAuth as any).openai.apiUrl = 'https://llm.example.com/v1'
+    ;(oldConfig.dictAuth as any).openai.model = 'gpt-4o-mini'
+    ;(oldConfig.dictAuth as any).openai.temperature = '0.5'
     ;(oldConfig.dictAuth as any).sogou = {
       token: 'legacy'
     }
@@ -64,6 +68,12 @@ describe('mergeConfig', () => {
       apiUrl: 'https://deeplx.example.com',
       token: 'deeplx-token'
     })
+    expect((mergedConfig.dictAuth as any).openai).toEqual({
+      apiUrl: 'https://llm.example.com/v1',
+      apiKey: 'sk-test',
+      model: 'gpt-4o-mini',
+      temperature: '0.5'
+    })
     expect(Object.keys(mergedConfig.dictAuth).sort()).toEqual([
       'alibaba',
       'baidu',
@@ -71,6 +81,7 @@ describe('mergeConfig', () => {
       'deepl',
       'deeplx',
       'niutrans',
+      'openai',
       'tencent',
       'volc',
       'youdaotrans'
@@ -85,7 +96,8 @@ describe('mergeConfig', () => {
       'volc',
       'niutrans',
       'deepl',
-      'deeplx'
+      'deeplx',
+      'openai'
     ] as const) {
       expect(profile.dicts.all[id].options.slInitial).toBe('collapse')
       expect(profile.dicts.all[id].options.tl).toBe('default')
